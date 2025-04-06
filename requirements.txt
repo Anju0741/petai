@@ -1,4 +1,6 @@
 Flask
+flask-cors
 joblib
-scikit-learn
 numpy
+scikit-learn
+pyngrok
