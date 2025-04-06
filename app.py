@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Load your scikit-learn Random Forest model and encoders
-model = joblib.load('dog_breeding_rf_model .pkl')
+model = joblib.load('dog_breeding_rf_model.pkl')
 breed_encoder = joblib.load('breed_encoder.pkl')
 temp_encoder = joblib.load('temp_encoder.pkl')
 
