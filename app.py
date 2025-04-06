@@ -1,27 +1,25 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import joblib
 import numpy as np
-from pyngrok import ngrok
-import threading
-from flask_cors import CORS
 
 # Initialize Flask app
 app = Flask(__name__)
 CORS(app)
 
-# Load your scikit-learn Random Forest model
-model = joblib.load('/content/dog_breeding_rf_model.pkl')
-breed_encoder = joblib.load('/content/breed_encoder.pkl')
-temp_encoder = joblib.load('/content/temp_encoder.pkl')
+# Load your scikit-learn Random Forest model and encoders
+model = joblib.load('dog_breeding_rf_model.pkl')
+breed_encoder = joblib.load('breed_encoder.pkl')
+temp_encoder = joblib.load('temp_encoder.pkl')
 
-# Define an endpoint for predictions
+@app.route('/')
+def home():
+    return "Pet Breeding Compatibility API is live!"
+
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
         data = request.get_json()
-        print("Received data:", data)  # Debugging
-        #input_data = data.get("input", {}) 
-        # Access directly from the root
         breed1 = data['breed1']
         breed2 = data['breed2']
         temp1 = data['temp1']
@@ -44,25 +42,7 @@ def predict():
         return jsonify({"compatibility_score": float(prediction)})
 
     except Exception as e:
-        print("Error:", str(e))
         return jsonify({"error": str(e)}), 500
 
-
-# Function to run Flask app in the background
-def run_flask():
-    app.run(host='0.0.0.0', port=5017)
-
 if __name__ == '__main__':
-    # Terminate any existing ngrok tunnels
-    ngrok.kill()
-
-    # Start ngrok to expose the Flask app
-    public_url = ngrok.connect(5017).public_url
-    print(f"Public URL: {public_url}")
-
-    # Start Flask in a background thread
-    flask_thread = threading.Thread(target=run_flask)
-    flask_thread.daemon = True  # Daemonize so it stops when the main program exits
-    flask_thread.start()
-
-    print("Flask app is running in the background. You can now run other cells.")
+    app.run(host='0.0.0.0', port=10000)
